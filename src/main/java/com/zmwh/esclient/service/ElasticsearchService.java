@@ -70,6 +70,7 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 import org.elasticsearch.search.suggest.phrase.DirectCandidateGeneratorBuilder;
@@ -433,7 +434,15 @@ public class ElasticsearchService<T, M> {
 
     private final ElasticsearchProperties elasticsearchProperties;
 
-    
+
+    /**
+     * modules 内部 xpack-sql
+     * https://www.elastic.co/guide/en/elasticsearch/reference/7.6/xpack-sql.html
+     * @param sql
+     * @param sqlFormat
+     * @return
+     * @throws Exception
+     */
     public String queryBySQL(String sql, SqlFormat sqlFormat) throws Exception {
         String host = elasticsearchProperties.getHost();
         String ipport = "";
@@ -1719,11 +1728,11 @@ public class ElasticsearchService<T, M> {
         String[] indexname = indexs;
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         SuggestBuilder suggestBuilder = new SuggestBuilder();
-        CompletionSuggestionBuilder completionSuggestionBuilder = new
-                CompletionSuggestionBuilder(fieldName + ".suggest");
-        completionSuggestionBuilder.text(fieldValue);
-        completionSuggestionBuilder.skipDuplicates(true);
-        completionSuggestionBuilder.size(Constant.COMPLETION_SUGGESTION_SIZE);
+        CompletionSuggestionBuilder completionSuggestionBuilder = SuggestBuilders.completionSuggestion(fieldName)
+                .text(fieldValue)
+                .skipDuplicates(true)
+                .size((Constant.COMPLETION_SUGGESTION_SIZE));
+
         suggestBuilder.addSuggestion("suggest_" + fieldName, completionSuggestionBuilder);
         searchSourceBuilder.suggest(suggestBuilder);
         SearchRequest searchRequest = new SearchRequest(indexname);
