@@ -1,5 +1,6 @@
 package com.zmwh.esclient.service;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -7,6 +8,7 @@ import cn.hutool.json.JSONUtil;
 import com.zmwh.esclient.annotation.ESFieId;
 import com.zmwh.esclient.annotation.ESID;
 import com.zmwh.esclient.config.ElasticsearchProperties;
+import com.zmwh.esclient.constants.Constants;
 import com.zmwh.esclient.core.*;
 import com.zmwh.esclient.core.response.ScrollResponse;
 import com.zmwh.esclient.core.response.SqlResponse;
@@ -153,15 +155,21 @@ public class ElasticsearchService<T, M> {
         return savePart(list,indexname);
     }
 
-    
     public BulkResponse[] saveBatch(List<T> list) throws Exception {
+        return this.saveBatch(list,null);
+    }
+    
+    public BulkResponse[] saveBatch(List<T> list,Integer batchSize) throws Exception {
         if (CollUtil.isEmpty(list)) {
             return null;
+        }
+        if (batchSize == null){
+            batchSize = Constants.BULK_COUNT;
         }
         T t = list.get(0);
         SettingsData settingsData = elasticsearchIndex.getSettingsData(t.getClass());
         String indexname = settingsData.getIndexname();
-        List<List<T>> lists = Tools.splitList(list, true);
+        List<List<T>> lists = CollUtil.split(list, batchSize);
         BulkResponse[] bulkResponses = new BulkResponse[lists.size()];
         for (int i = 0; i < lists.size(); i++) {
             bulkResponses[i] = savePart(lists.get(i),indexname);
@@ -205,8 +213,17 @@ public class ElasticsearchService<T, M> {
 
     
     public BulkResponse[] bulkUpdateBatch(List<T> list) throws Exception {
+        return this.bulkUpdateBatch(list,null);
+    }
+
+
+
+    public BulkResponse[] bulkUpdateBatch(List<T> list,Integer bulkCount) throws Exception {
         if(CollUtil.isEmpty(list)){
             return null;
+        }
+        if (bulkCount == null){
+            bulkCount = Constants.BULK_COUNT;
         }
         T t = list.get(0);
         if(Tools.checkNested(t)){
@@ -214,7 +231,7 @@ public class ElasticsearchService<T, M> {
         }
         SettingsData settingsData = elasticsearchIndex.getSettingsData(t.getClass());
         String indexname = settingsData.getIndexname();
-        List<List<T>> lists = Tools.splitList(list, true);
+        List<List<T>> lists = CollUtil.split(list, bulkCount);
         BulkResponse[] bulkResponses = new BulkResponse[lists.size()];
         for (int i = 0; i < lists.size(); i++) {
             bulkResponses[i] = updatePart(lists.get(i),indexname);
@@ -224,11 +241,11 @@ public class ElasticsearchService<T, M> {
 
     private BulkResponse updatePart(List<T> list,String indexname) throws Exception {
         BulkRequest rrr = new BulkRequest();
-        for (int i = 0; i < list.size(); i++) {
-            T tt = list.get(i);
-            String id = Tools.getESId(tt);
+        for (T item : list) {
+            String id = Tools.getESId(item);
+            Map<String, Object> map = BeanUtil.beanToMap(item);
             rrr.add(new UpdateRequest(indexname, id)
-                    .doc(Tools.getFieldValue(tt)));
+                    .doc(map));
         }
         BulkResponse bulkResponse = client.bulk(rrr, RequestOptions.DEFAULT);
         return bulkResponse;
@@ -246,7 +263,8 @@ public class ElasticsearchService<T, M> {
             throw new Exception("nested对象更新，请使用覆盖更新");
         }
         UpdateRequest updateRequest = new UpdateRequest(indexname, id);
-        updateRequest.doc(Tools.getFieldValue(t));
+        Map<String, Object> map = BeanUtil.beanToMap(t);
+        updateRequest.doc(map);
         UpdateResponse updateResponse = null;
         updateResponse = client.update(updateRequest, RequestOptions.DEFAULT);
         if (updateResponse.getResult() == DocWriteResponse.Result.CREATED) {
@@ -304,12 +322,10 @@ public class ElasticsearchService<T, M> {
     }
 
     private BulkResponse batchUpdate(List<T> list, String indexname,T tot) throws Exception {
-        Map map = Tools.getFieldValue(tot);
+        Map<String, Object> map = BeanUtil.beanToMap(tot);
         BulkRequest rrr = new BulkRequest();
-        for (int i = 0; i < list.size(); i++) {
-            T tt = list.get(i);
-
-            rrr.add(new UpdateRequest(indexname, Tools.getESId(tt))
+        for (T t : list) {
+            rrr.add(new UpdateRequest(indexname, Tools.getESId(t))
                     .doc(map));
         }
         BulkResponse bulkResponse = client.bulk(rrr, RequestOptions.DEFAULT);

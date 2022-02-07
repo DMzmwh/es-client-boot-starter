@@ -1,5 +1,7 @@
 package com.zmwh.esclient.core.response;
 
+import lombok.Data;
+
 import java.util.List;
 
 /**
@@ -7,6 +9,7 @@ import java.util.List;
  * @author: dmzmwh
  * @create: 2019-10-10 10:45
  **/
+@Data
 public class UriResponse {
 
 
@@ -22,38 +25,7 @@ public class UriResponse {
     private ShardsBean _shards;
     private HitsBeanX hits;
 
-    public int getTook() {
-        return took;
-    }
-
-    public void setTook(int took) {
-        this.took = took;
-    }
-
-    public boolean isTimed_out() {
-        return timed_out;
-    }
-
-    public void setTimed_out(boolean timed_out) {
-        this.timed_out = timed_out;
-    }
-
-    public ShardsBean get_shards() {
-        return _shards;
-    }
-
-    public void set_shards(ShardsBean _shards) {
-        this._shards = _shards;
-    }
-
-    public HitsBeanX getHits() {
-        return hits;
-    }
-
-    public void setHits(HitsBeanX hits) {
-        this.hits = hits;
-    }
-
+    @Data
     public static class ShardsBean {
         /**
          * total : 5
@@ -67,39 +39,9 @@ public class UriResponse {
         private int skipped;
         private int failed;
 
-        public int getTotal() {
-            return total;
-        }
-
-        public void setTotal(int total) {
-            this.total = total;
-        }
-
-        public int getSuccessful() {
-            return successful;
-        }
-
-        public void setSuccessful(int successful) {
-            this.successful = successful;
-        }
-
-        public int getSkipped() {
-            return skipped;
-        }
-
-        public void setSkipped(int skipped) {
-            this.skipped = skipped;
-        }
-
-        public int getFailed() {
-            return failed;
-        }
-
-        public void setFailed(int failed) {
-            this.failed = failed;
-        }
     }
 
+    @Data
     public static class HitsBeanX {
         /**
          * total : {"value":1,"relation":"eq"}
@@ -111,30 +53,8 @@ public class UriResponse {
         private double max_score;
         private List<HitsBean> hits;
 
-        public TotalBean getTotal() {
-            return total;
-        }
 
-        public void setTotal(TotalBean total) {
-            this.total = total;
-        }
-
-        public double getMax_score() {
-            return max_score;
-        }
-
-        public void setMax_score(double max_score) {
-            this.max_score = max_score;
-        }
-
-        public List<HitsBean> getHits() {
-            return hits;
-        }
-
-        public void setHits(List<HitsBean> hits) {
-            this.hits = hits;
-        }
-
+        @Data
         public static class TotalBean {
             /**
              * value : 1
@@ -161,6 +81,7 @@ public class UriResponse {
             }
         }
 
+        @Data
         public static class HitsBean {
             /**
              * _index : index
@@ -175,46 +96,6 @@ public class UriResponse {
             private String _id;
             private double _score;
             private Object _source;
-
-            public String get_index() {
-                return _index;
-            }
-
-            public void set_index(String _index) {
-                this._index = _index;
-            }
-
-            public String get_type() {
-                return _type;
-            }
-
-            public void set_type(String _type) {
-                this._type = _type;
-            }
-
-            public String get_id() {
-                return _id;
-            }
-
-            public void set_id(String _id) {
-                this._id = _id;
-            }
-
-            public double get_score() {
-                return _score;
-            }
-
-            public void set_score(double _score) {
-                this._score = _score;
-            }
-
-            public Object get_source() {
-                return _source;
-            }
-
-            public void set_source(Object _source) {
-                this._source = _source;
-            }
         }
     }
 }

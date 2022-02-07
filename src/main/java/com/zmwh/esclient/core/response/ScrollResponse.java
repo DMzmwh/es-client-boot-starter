@@ -1,5 +1,9 @@
 package com.zmwh.esclient.core.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 /**
@@ -7,28 +11,10 @@ import java.util.List;
  * @author: dmzmwh
  * @create: 2019-10-15 17:58
  **/
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ScrollResponse<T> {
     private List<T> list;
     private String scrollId;
-
-    public ScrollResponse(List<T> list, String scrollId) {
-        this.list = list;
-        this.scrollId = scrollId;
-    }
-
-    public List<T> getList() {
-        return list;
-    }
-
-    public void setList(List<T> list) {
-        this.list = list;
-    }
-
-    public String getScrollId() {
-        return scrollId;
-    }
-
-    public void setScrollId(String scrollId) {
-        this.scrollId = scrollId;
-    }
 }

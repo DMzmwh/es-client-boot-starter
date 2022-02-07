@@ -1,5 +1,7 @@
 package com.zmwh.esclient.core;
 
+import lombok.Data;
+
 import java.util.List;
 
 /**
@@ -8,6 +10,7 @@ import java.util.List;
  * author: dmzmwh
  * create: 2019-01-21 17:06
  **/
+@Data
 public class PageList<T> {
     List<T> list;
 
@@ -20,52 +23,4 @@ public class PageList<T> {
     private int currentPage;
 
     private int pageSize;
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-    }
-
-    public List<T> getList() {
-        return list;
-    }
-
-    public void setList(List<T> list) {
-        this.list = list;
-    }
-
-    public int getTotalPages() {
-        return totalPages;
-    }
-
-    public void setTotalPages(int totalPages) {
-        this.totalPages = totalPages;
-    }
-
-    public long getTotalElements() {
-        return totalElements;
-    }
-
-    public void setTotalElements(long totalElements) {
-        this.totalElements = totalElements;
-    }
-
-    public Object[] getSortValues() {
-        return sortValues;
-    }
-
-    public void setSortValues(Object[] sortValues) {
-        this.sortValues = sortValues;
-    }
 }

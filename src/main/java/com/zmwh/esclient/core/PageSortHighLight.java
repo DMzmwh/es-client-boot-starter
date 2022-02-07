@@ -1,11 +1,14 @@
 package com.zmwh.esclient.core;
 
+import lombok.Data;
+
 /**
  * 
  * description: 分页+排序+高亮对象封装
  * author: dmzmwh
  * create: 2019-01-21 17:09
  **/
+@Data
 public class PageSortHighLight {
     private int currentPage;
     private int pageSize;
@@ -22,37 +25,4 @@ public class PageSortHighLight {
         this.pageSize = pageSize;
         this.sort = sort;
     }
-
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public Sort getSort() {
-        return sort;
-    }
-
-    public void setSort(Sort sort) {
-        this.sort = sort;
-    }
-
-    public HighLight getHighLight() {
-        return highLight;
-    }
-
-    public void setHighLight(HighLight highLight) {
-        this.highLight = highLight;
-    }
-
 }

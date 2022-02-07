@@ -40,64 +40,6 @@ public class Tools {
         return null;
     }
 
-    /**
-     * 获取o中所有的字段有值的map组合
-     * @return
-     */
-    public static Map getFieldValue(Object o) throws IllegalAccessException {
-        Map retMap = new HashMap();
-        Field[] fs = o.getClass().getDeclaredFields();
-        for(int i = 0;i < fs.length;i++){
-            Field f = fs[i];
-            f.setAccessible(true);
-            if(f.get(o) != null){
-                retMap.put(f.getName(),f.get(o) );
-            }
-        }
-        return retMap;
-    }
-
-    /**
-     * 通过反射,获得定义Class时声明的父类的范型参数的类型.
-     *
-     * @param clazz The class to introspect
-     * @return the first generic declaration, or <code>Object.class</code> if cannot be determined
-     */
-    public static Class getSuperClassGenricType(Class clazz) {
-        return getSuperClassGenricType(clazz, 0);
-    }
-
-    /**
-     * 通过反射,获得定义Class时声明的父类的范型参数的类型. 如public BookManager extends GenricManager<Book>
-     *
-     * @param clazz clazz The class to introspect
-     * @param index the Index of the generic ddeclaration,start from 0.
-     */
-    public static Class getSuperClassGenricType(Class clazz, int index)
-            throws IndexOutOfBoundsException {
-        Type genType = clazz.getGenericSuperclass();
-        if (!(genType instanceof ParameterizedType)) {
-            return Object.class;
-        }
-        Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
-        if (index >= params.length || index < 0) {
-            return Object.class;
-        }
-        if (!(params[index] instanceof Class)) {
-            return Object.class;
-        }
-        return (Class) params[index];
-    }
-
-    public static String arraytostring(String[] strs){
-        if(strs == null){
-            return "";
-        }
-        StringBuffer sb = new StringBuffer();
-        Arrays.asList(strs).stream().forEach(str -> sb.append(str).append(" "));
-        return sb.toString();
-    }
-
     public static boolean arrayISNULL(Object[] objs){
         if(objs == null || objs.length == 0){
             return true;
@@ -115,26 +57,6 @@ public class Tools {
         }
     }
 
-    //批量更新（新增）每批次条数
-    public static int BULK_COUNT = 5000;
-
-    public static <T> List<List<T>> splitList(List<T> oriList,boolean isParallel){
-        if(oriList.size() <= BULK_COUNT){
-            List<List<T>> splitList = new ArrayList<>();
-            splitList.add(oriList);
-            return splitList;
-        }
-        int limit = (oriList.size() + BULK_COUNT - 1) / BULK_COUNT;
-        if(isParallel){
-            return Stream.iterate(0, n -> n + 1).limit(limit).parallel().map(a -> oriList.stream().skip(a * BULK_COUNT).limit(BULK_COUNT).parallel().collect(Collectors.toList())).collect(Collectors.toList());
-        }else{
-            final List<List<T>> splitList = new ArrayList<>();
-            Stream.iterate(0, n -> n + 1).limit(limit).forEach(i -> {
-                splitList.add(oriList.stream().skip(i * BULK_COUNT).limit(BULK_COUNT).collect(Collectors.toList()));
-            });
-            return splitList;
-        }
-    }
 
     /**
      * 判断当前类是否包含nested字段
