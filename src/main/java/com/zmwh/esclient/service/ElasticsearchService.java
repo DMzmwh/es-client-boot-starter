@@ -44,6 +44,7 @@ import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
+import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.script.mustache.SearchTemplateRequest;
 import org.elasticsearch.script.mustache.SearchTemplateResponse;
@@ -258,7 +259,16 @@ public class ElasticsearchService<T, M> {
         return true;
     }
 
-    
+
+    public BulkByScrollResponse updateByQuery(QueryBuilder queryBuilder, Class<T> clazz) throws Exception {
+        SettingsData settingsData = elasticsearchIndex.getSettingsData(clazz);
+        String[] indexname = settingsData.getSearchIndexNames();
+        UpdateByQueryRequest request = new UpdateByQueryRequest(indexname);
+        request.setQuery(queryBuilder);
+        BulkByScrollResponse bulkResponse = client.updateByQuery(request, RequestOptions.DEFAULT);
+        return bulkResponse;
+    }
+
     public BulkResponse batchUpdate(QueryBuilder queryBuilder, T t, Class clazz, int limitcount, boolean asyn) throws Exception {
         SettingsData settingsData = elasticsearchIndex.getSettingsData(t.getClass());
         String indexname = settingsData.getIndexname();
@@ -340,7 +350,7 @@ public class ElasticsearchService<T, M> {
     }
 
     
-    public BulkByScrollResponse deleteByCondition(QueryBuilder queryBuilder, Class<T> clazz) throws Exception {
+    public BulkByScrollResponse deleteByQuery(QueryBuilder queryBuilder, Class<T> clazz) throws Exception {
         SettingsData settingsData = elasticsearchIndex.getSettingsData(clazz);
         String[] indexname = settingsData.getSearchIndexNames();
         DeleteByQueryRequest request = new DeleteByQueryRequest(indexname);
